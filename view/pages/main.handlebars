@@ -1,0 +1,24 @@
+<script>
+  console.log("Hello world");
+  const test = 10 * 20;
+  console.log(test);
+</script>
+
+<>
+  <div x-data="{count: 1}">
+    <h1 class="header">{{> Hello}} {{test}}</h1>
+
+    <div>Small test to see whether this works alright</div>
+    <button x-bind="count" x-on:click="count++">Click me!</button>
+    <div>
+      Times clicked: <span x-html="count"></span>
+    </div>
+  </div>
+</>
+
+<style>
+.header {
+  color: green;
+  background-color: red;
+}
+</style>
