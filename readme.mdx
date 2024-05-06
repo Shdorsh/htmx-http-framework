@@ -105,7 +105,7 @@ This will use Alpine.js' special x-data attribute to set a new data with ```coun
 **Careful about separating the two brackets of the context count, and the x-data object's brackets, handlebars will error if they aren't spaced out.**
 
 ### Components
-Components, or rather handlebars partials are parts that you can use in other components. The components are compiled when the server boots/refreshes. You can create them and insert them by using {{> PascalCaseFilePath}}. Let us try to make a component out of the counter. In ```view/components```, make a Counter.handlebars file with the following:
+Components, or rather handlebars partials are parts that you can use in other templates or even components. The components are compiled when the server boots/refreshes. You can create them and insert them by using {{> PascalCaseFilePath}}. Let us try to make a component out of the counter. In ```view/components```, make a Counter.handlebars file with the following:
 ```html
   <div x-data="{count: {{count}} }">
     Current count: <span x-html="count"></span>
