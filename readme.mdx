@@ -9,6 +9,7 @@ A framework that bundles multiple libraries to create a well structured starting
     <li> <a href="#routing">Routing</a> </li>
     <li> <a href="#controllers">Controllers</a> </li>
     <li> <a href="#pages">Pages</a> </li>
+    <li> <a href="#components">Components</a> </li>
   </ol>
 <li> <a href="#libraries-used">Libraries used</a> </li>
 <li> <a href="#to-be-done">To be done</a> </li>
@@ -16,7 +17,7 @@ A framework that bundles multiple libraries to create a well structured starting
 </table>
 
 ## Getting started
-First, you need to download this repository. After that, you need to run ```npm install``` to download the packages that are missing. Make sure your node version is up to date wth ```node -v```.
+First, you need to download this repository. After that, you need to run ```npm install``` to download the packages that are missing. Make sure your node version is up to date wth ```node -v``` (20.12.2 as of writing). You can run the server with ```npm run dev```, it will automatically use nodemon and be open on port 3000, as the .env preset. 
 
 ### Routing
  To get started create a file in the ```./routes``` folder. You can alternatively use the already existing ```index.ts``` file, the routes will be automatically loaded in on server startup. From there, you can define a route by importing the  ```Route``` object from utils and use one of the following methods: get, post, put, patch, delete, options. Each of them take in the route of the request and an array consisting of the controller to which the HTTP method will be mapped, as well as the method of the controller that will be mapped, i.e:
@@ -91,14 +92,35 @@ You can have more than one script tag and style tag. During compilation, <a href
 </style>
 ```
 
-This will use Alpine.js' special x-data attribute to set a new data with ```count``` set to 0 for this specific div block. However, we also have count as context from Handlebars. Let's try passing that inside our template during rendering. Simply change the body tag to the following:
+This will use Alpine.js' special x-data attribute to set a new data with ```count``` set to 0 for this specific div block. However, we also have count as context from Handlebars. Let's try passing that inside our template during rendering.Also, we should add a way to increment the count with a button click. We can use ```x-on:click``` and ```x-bind``` for that. Simply change the body tag to the following:
 ```html
 <>
-  <div x-data={count: {{count}}}>
+  <div x-data={count: {{count}} }>
     Current count: <span x-html="count"></span>
+    <button x-bind="count" x-on:click="count++">Click me!</button>
   </div>
 </>
 ```
+
+**Careful about separating the two brackets of the context count, and the x-data object's brackets, handlebars will error if they aren't spaced out.**
+
+### Components
+Components, or rather handlebars templates are parts that you can use in other components. The components are compiled when the server boots/refreshes. You can create them and insert them by using {{> PascalCaseFilePath}}. Let us try to make a component out of the counter. In ```view/components```, make a Counter.handlebars file with the following:
+```html
+  <div x-data="{count: {{count}} }">
+    Current count: <span x-html="count"></span>
+    <button x-bind="count" x-on:click="count++">Click me!</button>
+  </div>
+```
+
+Now, our page just needs to make use of that component. Inside the fragments:
+```html
+<>
+  {{> Counter}}
+</>
+```
+
+When you refresh the server, it should show you the counter and automatically, it will have count set to 0. The parent template will always give its context to the partials called within, so we don't need to do ```{{> Counter count=count}}```.
 
 ## Libraries used
 - Express.js for the HTTP server, with nodemon for automatic restart

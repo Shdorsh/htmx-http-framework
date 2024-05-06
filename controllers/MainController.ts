@@ -3,7 +3,7 @@ import view from "../utils/view";
 
 const MainController: IController = {
   get: (request, response) => {
-    const context = {test: "world"};
+    const context = {count: 20};
     response.send(view("main", context));
   }
 }

@@ -9,11 +9,11 @@ const view = (url: string, context: TemplateSpecification = {}) => {
     const fileData = readFileSync(url, "utf8");
 
     const extractedData = extractParts(fileData);
-    const page = base(
-        compile(extractedData.body)(context),
+    const page = compile(base(
+        extractedData.body,
         extractedData.styles,
         extractedData.scripts
-    );
+    ))(context);
     return page;
 }
 
