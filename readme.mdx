@@ -1,0 +1,112 @@
+# HTMX HTTP Framework
+
+A framework that bundles multiple libraries to create a well structured starting point from which to build up a real project. This here is still in development sofar.
+
+<table>
+<ol>
+<li> <a href="#getting-started">Getting started</a> </li>
+  <ol>
+    <li> <a href="#routing">Routing</a> </li>
+    <li> <a href="#controllers">Controllers</a> </li>
+    <li> <a href="#pages">Pages</a> </li>
+  </ol>
+<li> <a href="#libraries-used">Libraries used</a> </li>
+<li> <a href="#to-be-done">To be done</a> </li>
+</ol>
+</table>
+
+## Getting started
+First, you need to download this repository. After that, you need to run ```npm install``` to download the packages that are missing. Make sure your node version is up to date wth ```node -v```.
+
+### Routing
+ To get started create a file in the ```./routes``` folder. You can alternatively use the already existing ```index.ts``` file, the routes will be automatically loaded in on server startup. From there, you can define a route by importing the  ```Route``` object from utils and use one of the following methods: get, post, put, patch, delete, options. Each of them take in the route of the request and an array consisting of the controller to which the HTTP method will be mapped, as well as the method of the controller that will be mapped, i.e:
+
+```ts
+import MainController from "../controllers/main";
+import Route from "../utils/routing";
+
+Route.get("/", [MainController, "custom"]);
+```
+This will make a GET request on "/" call MainController's custom method. Alternatively, if no controller method is defined in the array, the HTTP method will try to map to a controller method of the same name, or to "get" in this case:
+
+```ts
+import MainController from "../controllers/main";
+import Route from "../utils/routing";
+
+Route.get("/", [MainController]);
+```
+
+Alternatively, you can also use the Route.resource method, which will map the get, post, put and delete HTTP methods to the controller.
+
+### Controllers
+Inside of the controllers folder, make a new file with the name of your controller. I'd advise to use pascalcase. Import either IController for custom route names or IResourceController from utils/interfaces and create a new object with the interface as type:
+
+```ts
+import IController from "../utils/interfaces/IController";
+import view from "../utils/view";
+
+const MainController: IController = {
+  get: (request, response) => {
+  }
+}
+
+export default MainController;
+```
+
+Each method you create in the controller should take the request and the response as argument and have no return value. The request holds the data sent from the client, while the response can be used to return a response to the client. In here, we could do something with the request and do some operations on the database, but right now we only want to return a view. This can be easily donw with the ```view``` function. The method inside MainController should look like this:
+```ts
+  get: (request, response) => {
+    const context = {count: 0};
+    response.send(view("main", context));
+  }
+```
+
+This will send the compiled main file inside the ```view/pages``` folder to the client, using the context to fill out data on the view.
+
+### Pages
+Pages and components are templates compiled with <a href="https://handlebarsjs.com/">Handlebars</a>. Each page follows the following layout, very similar to Nuxt.js/Svelte:
+```html
+<script>
+</script>
+
+<>
+  Hello world
+</>
+
+<style>
+</style>
+```
+You can have more than one script tag and style tag. During compilation, <a href="https://htmx.org/">HTMX</a> and <a href="https://alpinejs.dev/">Alpine.js</a> are automatically added to the dependency, making it possible to directly use HTMX or Alpine.js within your handlebars template. Go create a file named main in your ```view/pages``` folder. In it, we will write down the following:
+```html
+<script>
+</script>
+
+<>
+  <div x-data={count: 0}>
+    Current count: <span x-html="count"></span>
+  </div>
+</>
+
+<style>
+</style>
+```
+
+This will use Alpine.js' special x-data attribute to set a new data with ```count``` set to 0 for this specific div block. However, we also have count as context from Handlebars. Let's try passing that inside our template during rendering. Simply change the body tag to the following:
+```html
+<>
+  <div x-data={count: {{count}}}>
+    Current count: <span x-html="count"></span>
+  </div>
+</>
+```
+
+## Libraries used
+- Express.js for the HTTP server, with nodemon for automatic restart
+- Dotenv for easy reading of env variables
+- Handlebars for view pages and components (actually compiled as partials)
+- Automatically serving HTMX for backend queries and Alpine.js for frontend reactivity
+
+## To be done
+- Facilitate connection to database with migration, model/query builder (possibly using Knex library)
+- Add a fitting bundler and minify code
+- Possibly add PostCSS
